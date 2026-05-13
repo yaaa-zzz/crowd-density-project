@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Analysis - Crowd Density</title>
+
+    <!-- Professional Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .analysis-wrapper {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .analysis-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .analysis-btn {
+            width: 200px;
+            height: 40px;
+            background-color: #111;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .analysis-btn:hover {
+            background-color: #333;
+        }
+
+        .status-panel {
+            width: 800px;
+            margin: 25px auto;
+            padding: 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .low { background-color: #e8f5e9; color: #1b5e20; }
+        .moderate { background-color: #fff8e1; color: #ff6f00; }
+        .high { background-color: #ffe0b2; color: #e65100; }
+        .veryhigh { background-color: #ffccbc; color: #bf360c; }
+        .extreme { background-color: #ffebee; color: #b71c1c; }
+
+        canvas {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="analysis-wrapper">
+
+    <a href="{{ url_for('dashboard') }}">
+        <button class="analysis-btn">Back to Dashboard</button>
+    </a>
+
+    <h1 class="analysis-title">Video Analysis - Crowd Density Monitoring</h1>
+
+    <form method="POST" enctype="multipart/form-data" style="margin-bottom:20px;">
+    <input type="file" name="video" accept="video/*" required>
+    <button type="submit" class="analysis-btn">Upload & Analyze</button>
+    </form>
+
+    <div style="margin-top:20px;">
+        <img src="{{ url_for('video_feed') }}"
+        width="800" style="border-radius: 8px;">
+    </div>
+
+    <!-- STATUS PANEL -->
+    <div id="statusPanel" class="status-panel low">
+        Density Score: 0 | Status: Low Density | Estimated People: 0 - 100
+    </div>
+
+    <!-- GRAPH -->
+    <canvas id="densityChart" width="800" height="200"></canvas>
+
+</div>
+
+<!-- Alert Sound -->
+<audio id="alertSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+</audio>
+
+<script>
+    const ctx = document.getElementById('densityChart').getContext('2d');
+
+    let densityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Density Score',
+                data: [],
+                borderColor: '#000',
+                fill: false,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    suggestedMin: 0,
+                    suggestedMax: 0.35
+                }
+            }
+        }
+    });
+
+    function updateDensity() {
+        fetch('/density_data')
+            .then(response => response.json())
+            .then(data => {
+
+                let latestScore = data.history.length > 0
+                    ? data.history[data.history.length - 1]
+                    : 0;
+
+                // Update Graph
+                densityChart.data.labels = data.history.map((_, i) => i);
+                densityChart.data.datasets[0].data = data.history;
+                densityChart.update();
+
+                // Update Status Panel (Correct Order)
+                let panel = document.getElementById("statusPanel");
+
+                panel.innerHTML =
+                    "Density Score: " + latestScore +
+                    " | Status: " + data.status +
+                    " | Estimated People: " + data.head_range;
+
+                panel.className = "status-panel";
+
+                if (data.status.includes("Low")) {
+                    panel.classList.add("low");
+                }
+                else if (data.status.includes("Moderate")) {
+                    panel.classList.add("moderate");
+                }
+                else if (data.status.includes("High") &&
+                         !data.status.includes("Very") &&
+                         !data.status.includes("Extreme")) {
+                    panel.classList.add("high");
+                }
+                else if (data.status.includes("Very High")) {
+                    panel.classList.add("veryhigh");
+                }
+                else if (data.status.includes("Extreme")) {
+                    panel.classList.add("extreme");
+                }
+
+                // Sound alert
+                if (data.status.includes("Very High") ||
+                    data.status.includes("Extreme")) {
+
+                    let sound = document.getElementById("alertSound");
+                    if (sound.paused) {
+                        sound.play();
+                    }
+                }
+            });
+    }
+
+    setInterval(updateDensity, 2000);
+</script>
+
+</body>
+</html>

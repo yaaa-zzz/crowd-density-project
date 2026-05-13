@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Analysis - Crowd Density</title>
+
+    <!-- Professional Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .analysis-wrapper {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .analysis-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .analysis-btn {
+            width: 200px;
+            height: 40px;
+            background-color: #111;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .analysis-btn:hover {
+            background-color: #333;
+        }
+
+        .upload-box {
+            margin: 20px 0;
+        }
+
+        .status-panel {
+            width: 800px;
+            margin: 25px auto;
+            padding: 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .low { background-color: #e8f5e9; color: #1b5e20; }
+        .moderate { background-color: #fff8e1; color: #ff6f00; }
+        .high { background-color: #ffe0b2; color: #e65100; }
+        .veryhigh { background-color: #ffccbc; color: #bf360c; }
+        .extreme { background-color: #ffebee; color: #b71c1c; }
+
+        .image-preview img {
+            width: 800px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="analysis-wrapper">
+
+    <a href="{{ url_for('dashboard') }}">
+        <button class="analysis-btn">Back to Dashboard</button>
+    </a>
+
+    <h1 class="analysis-title">Image Analysis - Crowd Density Monitoring</h1>
+
+    <div class="upload-box">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" required>
+            <button type="submit" class="analysis-btn">Analyze Image</button>
+        </form>
+    </div>
+
+    {% if filename %}
+        <div class="image-preview">
+            <img src="{{ url_for('uploaded_file', filename=filename) }}">
+        </div>
+    {% endif %}
+
+    {% if result %}
+    <div id="statusPanel"
+         class="status-panel 
+         {% if 'Low' in result.status %}low
+         {% elif 'Moderate' in result.status %}moderate
+         {% elif 'High' in result.status and 'Very' not in result.status and 'Extreme' not in result.status %}high
+         {% elif 'Very High' in result.status %}veryhigh
+         {% elif 'Extreme' in result.status %}extreme
+         {% endif %}">
+
+        Density Score: {{ result.density_score }} |
+        Status: {{ result.status }} |
+        Estimated People: {{ result.head_range }}
+
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

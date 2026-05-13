@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Webcam Analysis</title>
+    <style>
+        body { font-family: Arial; background: #1a1a2e; color: white; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        .video-box { 
+            display: flex; gap: 20px; margin-top: 20px;
+            flex-wrap: wrap; justify-content: center;
+        }
+        video, canvas, img { 
+            width: 480px; height: 360px; 
+            border: 2px solid #4CAF50; border-radius: 10px;
+        }
+        #processed { background: #000; }
+        .stats { 
+            background: #16213e; padding: 20px; 
+            border-radius: 10px; margin-top: 20px;
+        }
+        button {
+            background: #4CAF50; color: white; border: none;
+            padding: 12px 30px; font-size: 16px; cursor: pointer;
+            border-radius: 5px; margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .stop-btn { background: #f44336; }
+        .stop-btn:hover { background: #da3a2c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 Live Webcam Crowd Analysis</h1>
+        
+        <div>
+            <button id="startBtn" onclick="startCamera()">▶️ Start Camera</button>
+            <button id="stopBtn" class="stop-btn" onclick="stopCamera()">⏹️ Stop Camera</button>
+            <a href="/"><button>🏠 Dashboard</button></a>
+        </div>
+
+        <div class="video-box">
+            <div>
+                <h3>📷 Your Camera</h3>
+                <video id="video" autoplay playsinline></video>
+            </div>
+            <div>
+                <h3>🔍 Processed Output</h3>
+                <img id="processed" src="" alt="Processing will appear here..."/>
+            </div>
+        </div>
+
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        <div class="stats">
+            <h2>📊 Live Statistics</h2>
+            <p><strong>Status:</strong> <span id="status">Waiting...</span></p>
+            <p><strong>Estimated People:</strong> <span id="people">0</span></p>
+            <p><strong>Detected Count:</strong> <span id="detected">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let processed = document.getElementById('processed');
+        let stream = null;
+        let intervalId = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                video.srcObject = stream;
+                
+                // Start processing every 500ms (2 FPS to avoid overload)
+                intervalId = setInterval(captureAndSend, 500);
+            } catch (err) {
+                alert('Camera access denied or not available: ' + err.message);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            processed.src = '';
+        }
+
+        async function captureAndSend() {
+            if (!video.videoWidth) return;
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            let imageData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            try {
+                let response = await fetch('/process_webcam_frame', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: imageData })
+                });
+                
+                let data = await response.json();
+                
+                if (data.processed_image) {
+                    processed.src = data.processed_image;
+                    document.getElementById('status').textContent = data.status;
+                    document.getElementById('people').textContent = data.head_range;
+                    document.getElementById('detected').textContent = data.detected_count;
+                }
+            } catch (err) {
+                console.error('Processing error:', err);
+            }
+        }
+
+        // Cleanup on page leave
+        window.addEventListener('beforeunload', stopCamera);
+    </script>
+</body>
+</html>

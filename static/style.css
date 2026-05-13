@@ -1,0 +1,151 @@
+/* Global */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f2f2f2;
+    color: #111;
+}
+
+/* Center Wrapper */
+.login-wrapper {
+    text-align: center;
+    margin-top: 80px;
+}
+
+/* Project Title */
+.project-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: #111;
+}
+
+/* Login Box */
+.login-box {
+    width: 420px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 45px 40px;
+    border-radius: 8px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Login Heading */
+.login-box h2 {
+    margin-bottom: 30px;
+    font-weight: 500;
+    color: #222;
+}
+
+/* Input Groups */
+.input-group {
+    text-align: left;
+    margin-bottom: 22px;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #444;
+}
+
+.input-group input {
+    width: 100%;
+    height: 45px;
+    margin-top: 6px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: 0.2s ease;
+}
+
+/* Input focus */
+.input-group input:focus {
+    border-color: #000;
+    outline: none;
+}
+
+/* Button */
+.login-btn {
+    width: 100%;
+    height: 45px;
+    margin-top: 10px;
+    background-color: #111;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.login-btn:hover {
+    background-color: #333;
+}
+
+/* Error */
+.error-message {
+    margin-top: 15px;
+    color: #c62828;
+    font-size: 14px;
+}
+
+/* Dashboard Wrapper */
+.dashboard-wrapper {
+    text-align: center;
+    margin-top: 70px;
+}
+
+/* Titles */
+.main-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.second-title {
+    margin-top: 50px;
+}
+
+/* Welcome Text */
+.welcome-text {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Button Group */
+.button-group {
+    margin-top: 20px;
+}
+
+/* Dashboard Buttons */
+.dashboard-btn {
+    width: 260px;
+    height: 45px;
+    margin: 10px;
+    background-color: #111;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.dashboard-btn:hover {
+    background-color: #333;
+}
+
+/* Logout Button Variation */
+.logout-btn {
+    background-color: #444;
+}
+
+.logout-btn:hover {
+    background-color: #222;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crowd Density Dashboard</title>
+
+    <!-- Professional Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+    <!-- Title Section -->
+    <h1 class="main-title">Crowd Density Analysis</h1>
+    <p class="welcome-text">Welcome Admin</p>
+
+    <!-- Analysis Buttons -->
+    <div class="button-group">
+
+        <a href="{{ url_for('video_analysis') }}">
+            <button class="dashboard-btn">Video Analysis</button>
+        </a>
+
+        <a href="{{ url_for('image_analysis') }}">
+            <button class="dashboard-btn">Image Analysis</button>
+        </a>
+
+        <a href="{{ url_for('live_analysis') }}">
+            <button class="dashboard-btn">Live Analysis</button>
+        </a>
+
+    </div>
+
+    <!-- Emergency Section -->
+    <h1 class="main-title second-title">Emergency Alert System</h1>
+
+    <div class="button-group">
+
+        <a href="{{ url_for('emergency_data') }}">
+            <button class="dashboard-btn">Emergency Data Management</button>
+        </a>
+
+        <a href="{{ url_for('alert_management') }}">
+            <button class="dashboard-btn">Alert Management</button>
+        </a>
+
+    </div>
+
+    <!-- Logout -->
+    <div style="margin-top:40px;">
+        <a href="{{ url_for('logout') }}">
+            <button class="dashboard-btn logout-btn">Logout</button>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

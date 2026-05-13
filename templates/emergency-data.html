@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emergency Data Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .wrapper {
+            width: 1000px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Button */
+        .btn {
+            height: 42px;
+            padding: 0 20px;
+            background-color: #111;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        /* Input Style (Common for Add + Modal) */
+        .input-field {
+            width: 250px;
+            height: 42px;
+            padding: 0 12px;
+            margin: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #111;
+            outline: none;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 30px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        th {
+            background-color: #111;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 6px 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            margin: 2px;
+        }
+
+        .edit-btn {
+            background-color: #555;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #c62828;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 420px;
+            padding: 35px;
+            margin: 120px auto;
+            border-radius: 10px;
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .close {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-form .input-field {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .modal-form .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <a href="{{ url_for('dashboard') }}">
+        <button class="btn">Back to Dashboard</button>
+    </a>
+
+    <h1 class="title">Emergency Data Management</h1>
+
+    <!-- Add Contact -->
+    <div style="margin-top:30px;">
+        <form method="POST">
+            <input type="text" name="name" placeholder="Name" class="input-field" required>
+            <input type="text" name="whatsapp" placeholder="WhatsApp Number" class="input-field" required>
+            <button type="submit" class="btn">Add Contact</button>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>WhatsApp</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for contact in contacts %}
+        <tr>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.whatsapp }}</td>
+            <td>{{ contact.created_at }}</td>
+            <td>
+                <button class="action-btn edit-btn"
+                        onclick="openModal('{{ contact.id }}', '{{ contact.name }}', '{{ contact.whatsapp }}')">
+                    Edit
+                </button>
+
+                <a href="{{ url_for('delete_contact', id=contact.id) }}">
+                    <button class="action-btn delete-btn">Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Edit Contact</h3>
+
+        <form id="editForm" method="POST" class="modal-form">
+            <input type="text" name="name" id="editName" class="input-field" required>
+            <input type="text" name="whatsapp" id="editWhatsapp" class="input-field" required>
+            <button type="submit" class="btn">Update Contact</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id, name, whatsapp) {
+        document.getElementById("editModal").style.display = "block";
+        document.getElementById("editName").value = name;
+        document.getElementById("editWhatsapp").value = whatsapp;
+        document.getElementById("editForm").action = "/edit-contact/" + id;
+    }
+
+    function closeModal() {
+        document.getElementById("editModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        let modal = document.getElementById("editModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

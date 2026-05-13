@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alert Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .wrapper {
+            width: 1100px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .analysis-btn {
+            width: 200px;
+            height: 40px;
+            background-color: #111;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        th {
+            background-color: #111;
+            color: white;
+        }
+
+        .sent {
+            color: green;
+            font-weight: 500;
+        }
+
+        .failed {
+            color: red;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <a href="{{ url_for('dashboard') }}">
+        <button class="analysis-btn">Back to Dashboard</button>
+    </a>
+
+    <h1>Alert Management</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Source</th>
+            <th>Density Score</th>
+            <th>Status</th>
+            <th>Estimated People</th>
+            <th>Created At</th>
+            <th>Message Status</th>
+        </tr>
+
+        {% for alert in alerts %}
+        <tr>
+            <td>{{ alert.id }}</td>
+            <td>{{ alert.alert_source }}</td>
+            <td>{{ alert.density_score }}</td>
+            <td>{{ alert.status }}</td>
+            <td>{{ alert.head_range }}</td>
+            <td>{{ alert.created_at }}</td>
+            <td class="{{ alert.message_status }}">
+                {{ alert.message_status }}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+</body>
+</html>
