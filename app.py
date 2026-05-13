@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from flask import Flask, render_template, redirect, url_for, request, flash, Response, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
@@ -43,8 +47,8 @@ ALERT_COOLDOWN = 30  # Seconds between WhatsApp alerts in Live/Video feeds
 # -------------------------------------------------
 # TWILIO CONFIG
 # -------------------------------------------------
-TWILIO_SID = "TWILIO_SID"
-TWILIO_AUTH = "TWILIO_AUTH"
+TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_WHATSAPP = "whatsapp:+14155238886"
 
 client = Client(TWILIO_SID, TWILIO_AUTH)
