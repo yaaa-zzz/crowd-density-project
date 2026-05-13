@@ -51,7 +51,9 @@ TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_WHATSAPP = "whatsapp:+14155238886"
 
-client = Client(TWILIO_SID, TWILIO_AUTH)
+client = None
+if TWILIO_SID and TWILIO_AUTH:
+    client = Client(TWILIO_SID, TWILIO_AUTH)
 
 # -------------------------------------------------
 # DATABASE MODELS
