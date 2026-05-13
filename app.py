@@ -36,6 +36,8 @@ login_manager.login_view = "login"
 # -------------------------------------------------
 # LOAD YOLO MODEL
 # -------------------------------------------------
+import torch
+torch.serialization.add_safe_globals([])
 model = YOLO("yolov8n.pt")
 
 # -------------------------------------------------
